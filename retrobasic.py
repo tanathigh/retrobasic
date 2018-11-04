@@ -1,41 +1,38 @@
-# must set EOF in terminal file
-# change location of terminal and grammar
-# change start symbol
-# code must have spacebar between all of token
+# Code must have a spacebar between all of tokens.
 
-# define lambda
 from stack import Stack
 from scanner import Scanner
-lam = 'EMPTY'
 
 file = open('./terminal.txt', 'r')
 terminal = set([str(line.strip()) for line in file])
-non_terminal = set()
+nonTerminal = set()
 file.close()
 
-grammar = dict()
 startSymbol = 'pgm'
+lamda = 'EMPTY'
+grammar = dict()
 haveEmpty = set()
+
 file = open('./grammar.txt', 'r')
-i_gen = 1
+ig = 1
 for line in file:
     tmp = line.strip().split()
     key = tmp[0]
-    non_terminal.add(key)
+    nonTerminal.add(key)
     tmp = tmp[2:]
-    grammar[i_gen] = {key: []}
+    grammar[ig] = {key: []}
     a = []
     for i in range(len(tmp)):
         if tmp[i] == '|':
-            grammar[i_gen][key] = a
+            grammar[ig][key] = a
             a = []
-            i_gen += 1
-            grammar[i_gen] = {key: []}
+            ig += 1
+            grammar[ig] = {key: []}
             continue
         if i == len(tmp)-1:
             a.append(tmp[i])
-            grammar[i_gen][key] = a
-            i_gen += 1
+            grammar[ig][key] = a
+            ig += 1
             a = []
         if tmp[i] == "EMPTY":
             haveEmpty.add(key)
@@ -46,7 +43,6 @@ file.close()
 scan = Scanner("./input.txt")
 stream = scan.getStream()
 
-# 0:line_num, 1:id, 2:const, 3:IF, 4:PRINT, 5:GOTO, 6:STOP, 7:+, 8:-, 9:<, 10:=, 11:EOF
 parsing_table = {"pgm": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                  "line": [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                  "stmt": [0, 4, 0, 5, 6, 7, 8, 0, 0, 0, 0, 0],
@@ -63,7 +59,6 @@ parsing_table = {"pgm": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
 
 output = []
 valid = True
-
 
 s = Stack()
 s.push("EOF")
@@ -125,8 +120,6 @@ def updateOutput(type, val):
 def match(top, type):
     return top == type or (top == "line_num" and type == "number") or (top == "const" and type == "number")
 
-# 0:line_num, 1:id, 2:const, 3:IF, 4:PRINT, 5:GOTO, 6:STOP, 7:+, 8:-, 9:<, 10:=, 11:EOF
-
 
 def T(A, a):
     global parsing_table
@@ -156,7 +149,6 @@ def T(A, a):
         select = row[10]
     elif a == "EOF":
         select = row[11]
-
     if select == 0:
         return []
     else:
@@ -173,14 +165,14 @@ while index <= len(stream)-1 and not s.isEmpty():
             break
         s.pop()
         index += 1
-    elif top in non_terminal:
+    elif top in nonTerminal:
         l = T(top, type)
         if len(l) == 0:
             valid = False
             break
         s.pop()
         for i in range(len(l)-1, -1, -1):
-            if l[i] == lam:
+            if l[i] == lamda:
                 continue
             s.push(l[i])
 
@@ -192,6 +184,6 @@ if valid:
         file.write(str(o))
         file.write(" ")
     file.close()
-    print("Compile success, check output.txt file.")
+    print("Finished, check output.txt file.")
 else:
-    print("Compile error, please check your code.")
+    print("Error, please fix your code.")

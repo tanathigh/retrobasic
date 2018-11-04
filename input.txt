@@ -1,10 +1,8 @@
-10 A = 0 
-20 I = 0
-40 I = I + 1
-45 J = 0
-50 J = J + 1
-60 A = A + 1
-70 IF J < 10 50
-80 IF I < 10 40
-95 PRINT A
-90 STOP
+10 A = 1
+20 S = 0
+30 IF 10 < A 70 
+40 S = S + A
+50 A = A + 1
+60 GOTO 30
+70 PRINT S
+80 STOP
